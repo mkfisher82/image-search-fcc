@@ -9,16 +9,10 @@ const SearchModel = require('./searchModel');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Remove keys to env variables
-const apiKey = 'AIzaSyCZ2q5xJkhzTW-bgpemzjsR15fEnhmTsig';
-const searchEngineID = '003425296414371488463:eritysuyba4';
-const dbUser = 'mkfisher82';
-const dbPassword = 'nra4ever';
-
 const baseUrl = 'https://www.googleapis.com/customsearch/v1?';
 
 // Connecct to db
-mongoose.connect(`mongodb://${dbUser}:${dbPassword}@ds151259.mlab.com:51259/fcc-image`);
+mongoose.connect(`mongodb://${process.env.dbUser}:${process.env.dbPassword}@ds151259.mlab.com:51259/fcc-image`);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
 
@@ -48,7 +42,9 @@ app.get('/api/imagesearch/:searchTerm', async (req, res) => {
     offset = 1;
   }
 
-  const url = `${baseUrl}q=${searchTerm}&cx=${searchEngineID}&searchType=image&start=${offset}&key=${apiKey}`;
+  const url = `${baseUrl}q=${searchTerm}&cx=${
+    process.env.searchEngineID
+  }&searchType=image&start=${offset}&key=${process.env.APIKEY}`;
 
   const search = new SearchModel({
     searchTerm,
@@ -89,4 +85,4 @@ app.get('/api/imagesearch/:searchTerm', async (req, res) => {
   res.send(searchResults);
 });
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
